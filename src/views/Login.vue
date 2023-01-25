@@ -40,7 +40,7 @@ export default {
       try {
         const { email, password } = this;
         await this.login({ email, password });
-        this.$router.push("/dashboard");
+        this.$router.push("/");
       }
       catch (err) {
         console.log(err);
