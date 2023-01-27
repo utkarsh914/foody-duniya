@@ -1,20 +1,34 @@
 <template>
   <div class="container">
-    <div class="row justify-content-center">
+    <div class="row justify-content-center text-left">
       <div class="p-3 mt-6 col-md-6 card">
-        <h1 class="mb-2">Cart</h1>
+        <h1 class="mb-3"><b>Cart</b></h1>
         <div v-if="!dishesInCartArray.length">
           <h1>Cart is empty</h1>
         </div>
-        <div v-else v-for="dish in dishesInCartArray" :key="dish._id" class="food-card p-2 mb-2">
-          <b>{{ dish.name }}</b>
-          <br>
-          {{ dish.description }}
-          <button v-if="!dishesInCart[dish._id]" @click="addDishToCart(dish)" class="my-1 btn btn-primary">
-            Add to cart
-          </button>
-          <button v-else @click="removeDishFromCart(dish._id)" class="my-1 btn btn-secondary">
-            Remove from cart
+        <div v-else>
+          <div v-for="dish in dishesInCartArray" :key="dish._id" class="food-card p-2 mb-2">
+            <p><b>{{ dish.name }}</b></p>
+            <p style="text-overflow: ellipsis">{{ dish.description }}</p>
+            <div>
+              <span class="mr-6">Price: {{ dish.price }}</span>
+              <button
+                @click="removeDishFromCart(dish._id)"
+                :disabled="!dishesInCartCount[dish._id]"
+                class="my-1 btn btn-secondary cart-add-remove-btn">
+                -
+              </button>
+              [ {{ dishesInCartCount[dish._id] || 0 }} ]
+              <button
+                @click="addDishToCart(dish)"
+                class="my-1 btn btn-primary cart-add-remove-btn">
+                +
+              </button>
+            </div>
+          </div>
+          <p class="my-4"><b>Cart total: INR {{ cartTotal }}</b></p>
+          <button @click="checkout" class="my-1 btn btn-block btn-primary">
+            Checkout
           </button>
         </div>
       </div>
@@ -37,9 +51,16 @@ export default {
   },
   computed: {
     ...mapState('cart', ['dishesInCart']),
-    ...mapGetters('cart', ['dishesInCartArray']),
+    ...mapGetters('cart', ['dishesInCartArray', 'dishesInCartCount']),
     errorMessage() {
       return "Error occured!";
+    },
+    cartTotal() {
+      let total = 0;
+      this.dishesInCartArray.forEach(({ price, _id }) => {
+        total += parseInt(price) * this.dishesInCartCount[_id];
+      });
+      return total;
     }
   },
   methods: {
@@ -67,13 +88,11 @@ export default {
 </script>
 
 <style scoped>
-.card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  border-radius: 5px;
-}
-
 .food-card {
   border: 1px solid grey;
   border-radius: 5px;
+}
+.cart-add-remove-btn {
+  width: 40px;
 }
 </style>

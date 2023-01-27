@@ -1,21 +1,32 @@
 const ADD_DISH_TO_CART = 'ADD_DISH_TO_CART';
 const REMOVE_DISH_FROM_CART = 'REMOVE_DISH_FROM_CART';
+const SET_DISH_COUNT = 'SET_DISH_COUNT';
 
 const state = {
-  dishesInCart: {}
+  dishesInCart: {},
+  dishesInCartCount: {}
 };
 
 const getters = {
-  dishesInCartArray: state => Object.values(state.dishesInCart)
+
+  dishesInCartArray: state => Object.values(state.dishesInCart),
+
+  dishesInCartCount: state => state.dishesInCartCount
 };
 
 const actions = {
-  addDishToCart: ({ commit }, dish) => {
+
+  addDishToCart: ({ commit, state }, dish) => {
+    const count = (state.dishesInCartCount[dish._id] || 0) + 1;
     commit(ADD_DISH_TO_CART, dish);
+    commit(SET_DISH_COUNT, { id: dish._id, count });
   },
 
-  removeDishFromCart: ({ commit }, dishId) => {
-    commit(REMOVE_DISH_FROM_CART, dishId);
+  removeDishFromCart: ({ commit, state }, dishId) => {
+    const count = state.dishesInCartCount[dishId] - 1;
+    if (count === 0)
+      commit(REMOVE_DISH_FROM_CART, dishId);
+    commit(SET_DISH_COUNT, { id: dishId, count });
   }
 };
 
@@ -31,6 +42,11 @@ const mutations = {
     const newDishesInCart = { ...state.dishesInCart };
     delete newDishesInCart[dishId];
     state.dishesInCart = newDishesInCart;
+  },
+  [SET_DISH_COUNT]: (state, { id, count }) => {
+    const newDishesInCartCount = { ...state.dishesInCartCount };
+    newDishesInCartCount[id] = count;
+    state.dishesInCartCount = newDishesInCartCount;
   }
 };
 

@@ -24,11 +24,17 @@
           <br>
           Price: INR {{ dish.price }}
           <br>
-          <button v-if="!dishesInCart[dish._id]" @click="addDishToCart(dish)" class="my-1 btn btn-primary">
-              Add to cart
+          <button
+            @click="removeDishFromCart(dish._id)"
+            :disabled="!dishesInCartCount[dish._id]"
+            class="my-1 btn btn-secondary cart-add-remove-btn">
+            -
           </button>
-          <button v-else @click="removeDishFromCart(dish._id)" class="my-1 btn btn-secondary">
-              Remove from cart
+          [ {{ dishesInCartCount[dish._id] || 0 }} ]
+          <button
+            @click="addDishToCart(dish)"
+            class="my-1 btn btn-primary cart-add-remove-btn">
+            +
           </button>
         </div>
       </div>
@@ -51,7 +57,7 @@ export default {
   },
   computed: {
     ...mapState('cart', ['dishesInCart']),
-    ...mapGetters('cart', ['dishesInCartArray']),
+    ...mapGetters('cart', ['dishesInCartArray', 'dishesInCartCount']),
     errorMessage() {
       return "Error occured!";
     }
@@ -96,5 +102,8 @@ export default {
 .food-card {
   border: 1px solid grey;
   border-radius: 5px;
+}
+.cart-add-remove-btn {
+  width: 40px;
 }
 </style>
