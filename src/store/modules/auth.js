@@ -27,8 +27,8 @@ const actions = {
     dispatch('setLoginData', { user, token, role: RoleTypes.USER });
   },
 
-  registerAdmin: async ({ dispatch }, { username, password }) => {
-    await axios.post('/admin/signup', { username, password });
+  registerAdmin: async ({ dispatch }, { name, username, password }) => {
+    await axios.post('/admin/signup', { name, username, password });
     await dispatch('auth/loginAdmin', { username, password });
   },
   
