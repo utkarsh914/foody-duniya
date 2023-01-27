@@ -84,7 +84,7 @@ const routes = [
     }
   },
   {
-    path: "*",
+    path: "/:catchAll(.*)",
     name: '404',
     component: FourOhFour
   }
