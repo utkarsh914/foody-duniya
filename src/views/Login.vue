@@ -1,13 +1,24 @@
 <template>
-  <div class="container flex justify-content-center">
-    <div class="form-container px-4 py-3 my-6">
-      <form class="login-form">
-        <div class="mb-2"><h1>Login</h1></div>
+  <div class="container">
+    <div class="row justify-content-center px-4 py-3 my-6">
+      <form class="card col-md-8 p-4">
+        <div class="mb-2"><b>Login</b></div>
+        <div v-if="showError" class="alert alert-danger" role="alert">
+          {{ errorMessage }}
+        </div>
         <div class="form-group">
-          <input v-model="email" type="email" class="form-control" placeholder="Enter email">
+          <input v-model="username" type="text" class="form-control" placeholder="Enter email">
         </div>
         <div class="form-group">
           <input v-model="password" type="password" class="form-control" placeholder="Password">
+        </div>
+        <div class="form-group">
+          <label class="text-left">Select role</label>
+          <select v-model="role" class="form-control">
+            <option v-for="role in roleTypesArray" :key="role">
+              {{ role }}
+            </option>
+          </select>
         </div>
         <button type="submit" @click="submitForm" class="btn btn-primary btn-block">Submit</button>
         <div class="mt-2">
@@ -22,24 +33,37 @@
 </template>
 
 <script>
+import { RoleTypes } from '../constants';
 import { mapActions } from 'vuex';
 
 export default {
   name: 'login-page',
   data() {
     return {
-      email: "",
+      role: RoleTypes.USER,
+      username: "",
       password: "",
+      showError: false,
+      errorMessage: 'Some error occured!'
     };
   },
+  computed: {
+    roleTypesArray() {
+      return Object.values(RoleTypes);
+    }
+  },
   methods: {
-    ...mapActions('auth', ['login']),
+    ...mapActions('auth', ['loginUser', 'loginAdmin']),
     async submitForm(e) {
       e.preventDefault();
+      if (this.role === RoleTypes.USER) await this.handleUserLogin();
+      else await this.handleAdminLogin();
+    },
+    async handleUserLogin() {
       this.showError = false;
       try {
-        const { email, password } = this;
-        await this.login({ email, password });
+        const { username, password } = this;
+        await this.loginUser({ username, password });
         this.$router.push("/");
       }
       catch (err) {
@@ -47,18 +71,21 @@ export default {
         this.showError = true;
       }
     },
-    moveToRegister() {
-      this.$router.push("/register");
-    },
+    async handleAdminLogin() {
+      this.showError = false;
+      try {
+        const { username, password } = this;
+        await this.loginAdmin({ username, password });
+        this.$router.push({ name: 'admin-dashboard' });
+      }
+      catch (err) {
+        console.log(err);
+        this.showError = true;
+      }
+    }
   },
 };
 </script>
 
 <style scoped>
-.form-container {
-  width: 50%;
-  max-width: 90%;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  border-radius: 2%;
-}
 </style>

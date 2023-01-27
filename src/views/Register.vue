@@ -1,7 +1,7 @@
 <template>
-  <div class="container flex justify-content-center">
-    <div class="form-container px-4 py-3 my-6">
-      <form class="login-form">
+  <div class="container">
+    <div class="row justify-content-center px-4 py-3 my-6">
+      <form class="card col-md-8 p-4">
         <div class="mb-2"><h1>Register</h1></div>
         <div v-if="showError" class="alert alert-danger" role="alert">
           {{ errorMessage }}
@@ -10,10 +10,18 @@
           <input v-model="name" type="text" class="form-control" placeholder="Enter full name">
         </div>
         <div class="form-group">
-          <input v-model="email" type="email" class="form-control" placeholder="Enter email">
+          <input v-model="username" type="text" class="form-control" placeholder="Enter username">
         </div>
         <div class="form-group">
           <input v-model="password" type="password" class="form-control" placeholder="Password">
+        </div>
+        <div class="form-group">
+          <label class="text-left">Select role</label>
+          <select v-model="role" class="form-control">
+            <option v-for="role in roleTypesArray" :key="role">
+              {{ role }}
+            </option>
+          </select>
         </div>
         <button type="submit" @click="submitForm" class="btn btn-primary btn-block">Submit</button>
         <div class="mt-2">
@@ -29,13 +37,15 @@
 
 <script>
 import { mapActions } from 'vuex';
+import { RoleTypes } from '../constants';
 
 export default {
   name: 'register-page',
   data() {
     return {
+      role: RoleTypes.USER,
       name: "",
-      email: "",
+      username: "",
       password: "",
       showError: false,
     };
@@ -43,26 +53,42 @@ export default {
   computed: {
     errorMessage() {
       return "Error occured!";
+    },
+    roleTypesArray() {
+      return Object.values(RoleTypes);
     }
   },
   methods: {
-    ...mapActions('auth', ['register']),
+    ...mapActions('auth', ['registerUser', 'registerAdmin']),
     async submitForm(e) {
       e.preventDefault();
+      if (this.role === RoleTypes.USER) await this.handleUserSignUp();
+      else await this.handleAdminSignUp();
+    },
+    async handleUserSignUp() {
       this.showError = false;
       try {
-        const { name, email, password } = this;
-        await this.register({ name, email, password });
-        this.$router.push("/dashboard");
+        const { name, username, password } = this;
+        await this.registerUser({ name, username, password });
+        this.$router.push("/");
       }
       catch (err) {
         console.log(err);
         this.showError = true;
       }
     },
-    moveToRegister() {
-      this.$router.push("/register");
-    },
+    async handleAdminSignUp() {
+      this.showError = false;
+      try {
+        const { name, username, password } = this;
+        await this.registerAdmin({ name, username, password });
+        this.$router.push({ name: 'admin-dashboard' });
+      }
+      catch (err) {
+        console.log(err);
+        this.showError = true;
+      }
+    }
   },
 };
 </script>

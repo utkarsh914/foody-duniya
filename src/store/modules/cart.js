@@ -2,13 +2,11 @@ const ADD_DISH_TO_CART = 'ADD_DISH_TO_CART';
 const REMOVE_DISH_FROM_CART = 'REMOVE_DISH_FROM_CART';
 
 const state = {
-  dishes: {}
+  dishesInCart: {}
 };
 
 const getters = {
-  dishes: state => {
-    return Object.values(state.dishes);
-  }
+  dishesInCartArray: state => Object.values(state.dishesInCart)
 };
 
 const actions = {
@@ -16,17 +14,23 @@ const actions = {
     commit(ADD_DISH_TO_CART, dish);
   },
 
-  removeDishFromCart: ({ commit }, dish) => {
-    commit(REMOVE_DISH_FROM_CART, dish);
+  removeDishFromCart: ({ commit }, dishId) => {
+    commit(REMOVE_DISH_FROM_CART, dishId);
   }
 };
 
 const mutations = {
   [ADD_DISH_TO_CART]: (state, dish) => {
-    state[dish.id] = dish;
+    const newDishesInCart = {
+      ...state.dishesInCart,
+      [dish._id]: dish
+    };
+    state.dishesInCart = newDishesInCart;
   },
   [REMOVE_DISH_FROM_CART]: (state, dishId) => {
-    delete state.dishes[dishId];
+    const newDishesInCart = { ...state.dishesInCart };
+    delete newDishesInCart[dishId];
+    state.dishesInCart = newDishesInCart;
   }
 };
 
