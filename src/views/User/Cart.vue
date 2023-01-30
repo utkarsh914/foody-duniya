@@ -10,6 +10,7 @@
           <div v-for="dish in dishesInCartArray" :key="dish._id" class="food-card p-2 mb-2">
             <p><b>{{ dish.name }}</b></p>
             <p style="text-overflow: ellipsis">{{ dish.description }}</p>
+            <img :src="dish.picture" alt="Dish picture" class="dish-image" />
             <div>
               <span class="mr-6">Price: {{ dish.price }}</span>
               <button
@@ -94,5 +95,9 @@ export default {
 }
 .cart-add-remove-btn {
   width: 40px;
+}
+
+.dish-image {
+  max-height: 100px;
 }
 </style>
