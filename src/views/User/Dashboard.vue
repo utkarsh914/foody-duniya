@@ -19,6 +19,7 @@
         </div>
         <div v-else v-for="dish in dishes" :key="dish._id" class="food-card p-2 mb-2">
           <b>{{ dish.name }}</b>
+          <img :src="dish.picture" alt="Dish picture" class="dish-image" />
           <br>
           {{ dish.description }}
           <br>
@@ -105,5 +106,9 @@ export default {
 }
 .cart-add-remove-btn {
   width: 40px;
+}
+
+.dish-image {
+  max-height: 100px;
 }
 </style>

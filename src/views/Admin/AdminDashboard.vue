@@ -20,6 +20,8 @@
         <div v-else v-for="dish in dishes" :key="dish._id" class="food-card p-2 mb-2">
           <b>{{ dish.name }}</b>
           <br>
+          <img :src="dish.picture" alt="Dish picture" class="dish-image" />
+          <br>
           {{ dish.description }}
           <br>
           Price: INR {{ dish.price }}
@@ -106,5 +108,8 @@ export default {
 .food-card {
   border: 1px solid grey;
   border-radius: 5px;
+}
+.dish-image {
+  max-height: 100px;
 }
 </style>

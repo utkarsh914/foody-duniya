@@ -13,8 +13,8 @@ const actions = {
     const response = await axios.get('/dish/search-dishes', { params: { name: searchQuery } });
     return response.data.dishes;
   },
-  createDish: async (_, { name, description, price }) => {
-    const response = await axios.post('/dish', { name, description, price });
+  createDish: async (_, { name, description, price, picture }) => {
+    const response = await axios.post('/dish', { name, description, price, picture });
     return response.data.dish;
   },
   editDish: async (_, { id, name, description, price }) => {

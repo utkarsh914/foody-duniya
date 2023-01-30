@@ -15,6 +15,15 @@
           <div class="form-group">
             <input v-model="price" type="number"  class="form-control" placeholder="Enter price in rupees">
           </div>
+          <!-- <b-form-file
+            v-model="picture"
+            :state="Boolean(picture)"
+            placeholder="Choose a file or drop it here..."
+            drop-placeholder="Drop file here..."
+          ></b-form-file> -->
+          <div class="form-group">
+            <input type="file" name="picture" class="form-control" v-on:change="handleFileSelect" />
+          </div>
           <button type="submit" @click="submitForm" class="btn btn-primary btn-block">Submit</button>
         </form>
       </div>
@@ -32,6 +41,7 @@ export default {
       name: "",
       description: "",
       price: "",
+      picture: null,
       showError: false,
       isLoading: false
     };
@@ -43,12 +53,21 @@ export default {
   },
   methods: {
     ...mapActions('dish', ['createDish']),
+    handleFileSelect(e) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.addEventListener('load', () => {
+        this.picture = reader.result;
+      });
+      reader.readAsDataURL(file);
+    },
     async submitForm(e) {
       e.preventDefault();
       this.showError = false;
       try {
-        const { name, description, price } = this;
-        await this.createDish({ name, description, price });
+        const { name, description, price, picture } = this;
+        await this.createDish({ name, description, price, picture });
         alert('Created successfully!');
         this.resetFormData();
       }
