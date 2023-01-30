@@ -21,6 +21,13 @@
           <div class="form-group">
             <input v-model="price" type="number"  class="form-control" placeholder="Enter price in rupees">
           </div>
+          <div v-if="picture" class="mb-2">
+            <p>Old image: </p>
+            <img :src="picture" alt="Dish picture" class="dish-image" />
+          </div>
+          <div class="form-group">
+            <input type="file" name="picture" class="form-control" v-on:change="handleFileSelect" placeholder="Select new image"/>
+          </div>
           <button type="submit" @click="submitForm" class="btn btn-primary btn-block">Submit</button>
         </form>
       </div>
@@ -30,6 +37,7 @@
 
 <script>
 import { mapActions } from 'vuex';
+import { resizeImage } from '@/Plugins/Image';
 
 export default {
   name: 'edit-dish-page',
@@ -43,6 +51,7 @@ export default {
       name: "",
       description: "",
       price: "",
+      picture: null,
       showError: false,
       isLoading: false,
       fetchDishFailed: false
@@ -55,6 +64,16 @@ export default {
   },
   methods: {
     ...mapActions('dish', ['editDish', 'fetchDish']),
+    async handleFileSelect(e) {
+      try {
+        const file = e.target.files[0];
+        this.picture = await resizeImage(file);
+      } catch (err) {
+        alert('Image upload failed');
+        console.log(err);
+        this.picture = null;
+      }
+    },
     async handleFetchDish(id) {
       try {
         this.isLoading = true;
@@ -62,6 +81,7 @@ export default {
         this.name = dish.name;
         this.price = dish.price;
         this.description = dish.description;
+        this.picture = dish.picture || null
       }
       catch (err) {
         console.log(err);
@@ -75,8 +95,8 @@ export default {
       e.preventDefault();
       this.showError = false;
       try {
-        const { id, name, description, price } = this;
-        await this.editDish({ id, name, description, price });
+        const { id, name, description, price, picture } = this;
+        await this.editDish({ id, name, description, price, picture });
         alert('Edited successfully!');
       }
       catch (err) {
@@ -92,5 +112,8 @@ export default {
 .food-card {
   border: 1px solid grey;
   border-radius: 5px;
+}
+.dish-image {
+  max-height: 100px;
 }
 </style>

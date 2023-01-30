@@ -15,14 +15,12 @@
           <div class="form-group">
             <input v-model="price" type="number"  class="form-control" placeholder="Enter price in rupees">
           </div>
-          <!-- <b-form-file
-            v-model="picture"
-            :state="Boolean(picture)"
-            placeholder="Choose a file or drop it here..."
-            drop-placeholder="Drop file here..."
-          ></b-form-file> -->
           <div class="form-group">
             <input type="file" name="picture" class="form-control" v-on:change="handleFileSelect" />
+          </div>
+          <div v-if="picture" class="mb-2">
+            <p>Selected image: </p>
+            <img :src="picture" alt="Dish picture" class="dish-image" />
           </div>
           <button type="submit" @click="submitForm" class="btn btn-primary btn-block">Submit</button>
         </form>
@@ -33,6 +31,7 @@
 
 <script>
 import { mapActions } from 'vuex';
+import { resizeImage } from '@/Plugins/Image';
 
 export default {
   name: 'create-dish-page',
@@ -53,14 +52,15 @@ export default {
   },
   methods: {
     ...mapActions('dish', ['createDish']),
-    handleFileSelect(e) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.addEventListener('load', () => {
-        this.picture = reader.result;
-      });
-      reader.readAsDataURL(file);
+    async handleFileSelect(e) {
+      try {
+        const file = e.target.files[0];
+        this.picture = await resizeImage(file);
+      } catch (err) {
+        alert('Image upload failed');
+        console.log(err);
+        this.picture = null;
+      }
     },
     async submitForm(e) {
       e.preventDefault();

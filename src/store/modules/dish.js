@@ -17,8 +17,8 @@ const actions = {
     const response = await axios.post('/dish', { name, description, price, picture });
     return response.data.dish;
   },
-  editDish: async (_, { id, name, description, price }) => {
-    const response = await axios.patch('/dish', { id, name, description, price });
+  editDish: async (_, { id, name, description, price, picture }) => {
+    const response = await axios.patch('/dish', { id, name, description, price, picture });
     return response.data.dish;
   },
   deleteDish: async (_, dishId) => {
